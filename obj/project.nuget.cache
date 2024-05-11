@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "FIXBB6ezdjGIt8/oVprQrVs6DDZgHI92Nh0NMfwLZfjBzpMI2FzVNsEKUJ89tAhJMOdOe9YNZTj4cO388Xq7tQ==",
+  "dgSpecHash": "gHuCU398E5H6+njxAf/EvYfkugDeP2j6UzfIWyMMKMqRkoZvbxBl6RsO24CEt/JngusEtHO552D8yDuEM3H4vA==",
   "success": true,
-  "projectFilePath": "c:\\project\\tamrin\\TestApi\\TestApi.csproj",
+  "projectFilePath": "C:\\project\\tamrin\\TestApi\\TestApi.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\tr.kamyabi\\.nuget\\packages\\automapper\\12.0.1\\automapper.12.0.1.nupkg.sha512",
     "C:\\Users\\tr.kamyabi\\.nuget\\packages\\automapper.extensions.microsoft.dependencyinjection\\12.0.1\\automapper.extensions.microsoft.dependencyinjection.12.0.1.nupkg.sha512",

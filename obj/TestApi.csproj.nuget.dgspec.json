@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "c:\\project\\tamrin\\TestApi\\TestApi.csproj": {}
+    "C:\\project\\tamrin\\TestApi\\TestApi.csproj": {}
   },
   "projects": {
-    "c:\\project\\tamrin\\TestApi\\TestApi.csproj": {
+    "C:\\project\\tamrin\\TestApi\\TestApi.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\project\\tamrin\\TestApi\\TestApi.csproj",
+        "projectUniqueName": "C:\\project\\tamrin\\TestApi\\TestApi.csproj",
         "projectName": "TestApi",
-        "projectPath": "c:\\project\\tamrin\\TestApi\\TestApi.csproj",
+        "projectPath": "C:\\project\\tamrin\\TestApi\\TestApi.csproj",
         "packagesPath": "C:\\Users\\tr.kamyabi\\.nuget\\packages\\",
-        "outputPath": "c:\\project\\tamrin\\TestApi\\obj\\",
+        "outputPath": "C:\\project\\tamrin\\TestApi\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\tr.kamyabi\\AppData\\Roaming\\NuGet\\NuGet.Config",
