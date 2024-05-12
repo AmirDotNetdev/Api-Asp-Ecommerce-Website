@@ -11,5 +11,6 @@ namespace TestApi.Repositories.AuthRepository
     {
         Task<Response_ApiUserRegisterDtos> Register (Request_ApiUserRegisterDto userDto);
         Task<Response_ApiUserRegisterDtos> RegisterAdmin(Request_ApiUserRegisterDto userDto, int secretKey);
+        Task<Response_LoginDto> Login(Request_LoginApi loginApi);
     }
 }

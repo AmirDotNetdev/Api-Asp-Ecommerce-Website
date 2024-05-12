@@ -23,6 +23,8 @@ namespace TestApi.Repositories.AuthRepository
             _userManager = userManager;
         }
 
+        
+
         public async Task<Response_ApiUserRegisterDtos> Register(Request_ApiUserRegisterDto userDto)
         {
             var user = new ApiUser()
@@ -97,6 +99,42 @@ namespace TestApi.Repositories.AuthRepository
             {
                 isSuccess = false,
                 Message = errors
+            };
+        }
+        public async Task<Response_LoginDto> Login(Request_LoginApi login)
+        {
+            var user = await _userManager.FindByEmailAsync(login.Email);
+            if(user == null)
+            {
+                return new Response_LoginDto()
+                {
+                    Result = false,
+                    Errors = new List<string>()
+                    {
+                        "Wrong Login Information"
+                    }
+
+                };
+            }
+            if(user.EmailConfirmed == false)
+            {
+                return new Response_LoginDto()
+                {
+                    Result = false,
+                    Errors = new List<string>()
+                    {
+                        "Email not confirimed"
+                    }
+                };
+            }
+            var token = "Empty";
+            var refreshToken = "Empty";
+            return new Response_LoginDto()
+            {
+                RefreshToken = refreshToken,
+                Token = token,
+                UserId = user.Id,
+                Result = true
             };
         }
     }
