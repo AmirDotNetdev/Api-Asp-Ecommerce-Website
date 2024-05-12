@@ -20,5 +20,7 @@ namespace TestApi.Data
             base.OnModelCreating(builder);
             builder.ApplyConfiguration(new RoleConfiguration());
         }
+
+        public DbSet<RefreshToken> RefreshTokens {get; set;}
     }
 }

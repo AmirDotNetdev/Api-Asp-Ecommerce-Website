@@ -1,9 +1,15 @@
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using TestApi.Constants;
+using TestApi.Controllers;
 using TestApi.Data;
 using TestApi.DTOs.Request;
 using TestApi.DTOs.Response;
@@ -127,8 +133,20 @@ namespace TestApi.Repositories.AuthRepository
                     }
                 };
             }
-            var token = "Empty";
-            var refreshToken = "Empty";
+            var isPassword = await _userManager.CheckPasswordAsync(user, login.Password);
+            if(!isPassword)
+            {
+                return new Response_LoginDto()
+                {
+                    Result = false,
+                    Errors = new List<string>
+                    {
+                        "Wrong Password"
+                    }
+                };
+            }
+            var token = await GenerateToken(user);
+            var refreshToken = await GenerateRefreshToken(user, token);
             return new Response_LoginDto()
             {
                 RefreshToken = refreshToken,
@@ -137,5 +155,85 @@ namespace TestApi.Repositories.AuthRepository
                 Result = true
             };
         }
+
+        public async Task<Response_LoginDto> VerifyAndGenerateTokens(Request_TokenDto tokenDto)
+        {
+            var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
+            var jwtContent = jwtSecurityTokenHandler.ReadJwtToken(tokenDto.Token);
+            var tokenIssuer = jwtContent.Issuer;
+            if(tokenIssuer != _configuration["JwtSettings:Issuer"])
+            {
+                return new Response_LoginDto
+                {
+                    Result = false,
+                    Errors = new List<string>
+                    {
+                        "Token parameters are wrong"
+                    }
+                };
+            }
+        }
+
+        private async Task<string> GenerateToken(ApiUser user)
+        {
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:Key"]));
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+            var roles = await _userManager.GetRolesAsync(user);
+            var roleClaims = roles.Select(role => new Claim(ClaimTypes.Role, role));
+            var userClaims = await _userManager.GetClaimsAsync(user);
+            var claims = new List<Claim>()
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, user.Email),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                new Claim("uid", user.Id),
+
+            }.Union(userClaims).Union(roleClaims);
+            //Generate Token
+            var token = new JwtSecurityToken(
+                issuer : _configuration["JwtSettings:Issuer"],
+                audience : _configuration["JwtSettings:Audience"],
+                claims : claims,
+                expires : DateTime.UtcNow.AddMinutes(Convert.ToInt32(_configuration["JwtSettings:DurationInMinutes"])),
+                signingCredentials : credentials
+            );
+            return new JwtSecurityTokenHandler().WriteToken(token);
+            
+                
+            
+        }
+
+        private async Task<string> GenerateRefreshToken(ApiUser apiUser, string token)
+        {
+            var existingRefreshToken = await _dbContext.RefreshTokens.FirstOrDefaultAsync(x => x.UserId == apiUser.Id);
+            if(existingRefreshToken != null)
+            {
+                _dbContext.RefreshTokens.Remove(existingRefreshToken);
+                await _dbContext.SaveChangesAsync();
+
+            }
+            var JwtSecurityTokenHandler =new JwtSecurityTokenHandler();
+            var tokenContent = JwtSecurityTokenHandler.ReadJwtToken(token);
+
+            var refreshToken = new RefreshToken
+            {
+                JwtId = tokenContent.Id,
+                Token = RandomStringGeneration(23),
+                AddedDate = DateTime.UtcNow,
+                ExpireDate = DateTime.UtcNow.AddMinutes(110),
+                UserId = apiUser.Id
+            };
+            await _dbContext.RefreshTokens.AddAsync(refreshToken);
+            await _dbContext.SaveChangesAsync();
+            return refreshToken.Token;
+        }
+        private string RandomStringGeneration(int length)
+        {
+            var random = new Random();
+            var chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789";
+            return new string(Enumerable.Repeat(chars, length).Select(s => s[random.Next(s.Length)]).ToArray());
+        }
+
+        
     }
 }
