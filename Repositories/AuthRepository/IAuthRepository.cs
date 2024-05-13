@@ -13,5 +13,6 @@ namespace TestApi.Repositories.AuthRepository
         Task<Response_ApiUserRegisterDtos> RegisterAdmin(Request_ApiUserRegisterDto userDto, int secretKey);
         Task<Response_LoginDto> Login(Request_LoginApi loginApi);
         Task<Response_LoginDto> VerifyAndGenerateTokens(Request_TokenDto tokenDto);
+        Task<bool> LogoutDeleteRefreshToken(string userId);
     }
 }

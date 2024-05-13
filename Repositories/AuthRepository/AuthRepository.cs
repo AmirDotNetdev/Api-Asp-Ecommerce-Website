@@ -13,6 +13,7 @@ using TestApi.Controllers;
 using TestApi.Data;
 using TestApi.DTOs.Request;
 using TestApi.DTOs.Response;
+using TestApi.Migrations;
 using TestApi.Models.AuthModels;
 
 namespace TestApi.Repositories.AuthRepository
@@ -159,8 +160,8 @@ namespace TestApi.Repositories.AuthRepository
         public async Task<Response_LoginDto> VerifyAndGenerateTokens(Request_TokenDto tokenDto)
         {
             var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
-            var jwtContent = jwtSecurityTokenHandler.ReadJwtToken(tokenDto.Token);
-            var tokenIssuer = jwtContent.Issuer;
+            var tokenContent = jwtSecurityTokenHandler.ReadJwtToken(tokenDto.Token);
+            var tokenIssuer = tokenContent.Issuer;
             if(tokenIssuer != _configuration["JwtSettings:Issuer"])
             {
                 return new Response_LoginDto
@@ -172,6 +173,78 @@ namespace TestApi.Repositories.AuthRepository
                     }
                 };
             }
+            var tokenAudience = tokenContent.Audiences.ToList();
+            if(!tokenAudience.Contains(_configuration["JwtSettings:Audience"]))
+            {
+                return new Response_LoginDto
+                {
+                    Result = false,
+                    Errors = new List<string>
+                    {
+                        "Token parameters are wrong"
+                    }
+                };
+            }
+            var userName = tokenContent.Claims.ToList().FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub)?.Value;
+            var user = await _userManager.FindByNameAsync(userName);
+            if(user == null || user.Id != tokenDto.UserId)
+            {
+                return new Response_LoginDto
+                {
+                    Result = false,
+                    Errors = new List<string>
+                    {
+                        "Token parameters are wrong"
+                    }
+                };
+            }
+
+            //Refresh token validateion
+
+            var dbRefreshToken = await _dbContext.RefreshTokens.FirstOrDefaultAsync(x => x.Token == tokenDto.RefreshToken);
+            if(dbRefreshToken == null)
+            {
+                return new Response_LoginDto
+                {
+                    Result = false,
+                    Errors = new List<string>
+                    {
+                        "Token parameters are wrong"
+                    }
+                };
+            }
+            if(dbRefreshToken.JwtId != tokenContent.Id)
+            {
+                return new Response_LoginDto
+                {
+                    Result = false,
+                    Errors = new List<string>
+                    {
+                        "Token parameters are wrong"
+                    }
+                };
+            }
+            if(dbRefreshToken.ExpireDate < DateTime.UtcNow)
+            {
+                return new Response_LoginDto
+                {
+                    Result = false,
+                    Errors = new List<string>
+                    {
+                        "Token parameters are wrong"
+                    }
+                };
+            }
+            var newToken = await GenerateToken(user);
+            var newRefreshToken = await GenerateRefreshToken(user , newToken);
+            return new Response_LoginDto
+            {
+                Result = true,
+                RefreshToken = newRefreshToken,
+                UserId = user.Id,
+                Token = newToken,
+                Errors = new List<String>()
+            };
         }
 
         private async Task<string> GenerateToken(ApiUser user)
@@ -234,6 +307,16 @@ namespace TestApi.Repositories.AuthRepository
             return new string(Enumerable.Repeat(chars, length).Select(s => s[random.Next(s.Length)]).ToArray());
         }
 
-        
+        public async Task<bool> LogoutDeleteRefreshToken(string userId)
+        {
+            var dbRefreshToken = await _dbContext.RefreshTokens.FirstOrDefaultAsync(x => x.UserId == userId);
+            if(dbRefreshToken == null)
+            {
+                return true;
+            }
+            _dbContext.RefreshTokens.Remove(dbRefreshToken);
+            await _dbContext.SaveChangesAsync();
+            return true;
+        }
     }
 }

@@ -5,8 +5,10 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Client;
 using Microsoft.IdentityModel.Tokens;
 using TestApi.DTOs.Request;
 using TestApi.DTOs.Response;
@@ -118,11 +120,41 @@ namespace TestApi.Controllers
             return Ok(authResult);
         }
 
-        // private function
-
-        private async Task<bool> SendEmail (string body, string email , string subject = "EmailConfirimation")
+        [HttpPost]
+        [Route("GenerateTokens")]
+        public async Task<ActionResult<Response_LoginDto>> GenerateTokens ([FromBody] Request_TokenDto request)
         {
-            return true;
+            var result = await _authRepo.VerifyAndGenerateTokens(request);
+            if(result.Result == false)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+
+        }
+        [Authorize]
+        [HttpDelete("Logout")]
+        public async Task<ActionResult> Logout()
+        {
+            var userId = HttpContext.User.FindFirstValue("uid");
+            await _authRepo.LogoutDeleteRefreshToken(userId);
+            return Ok("Logout Successful");
+        }
+        [Authorize]
+        [HttpPut]
+        [Route("UpdateUser")]
+        public async Task<ActionResult> UpdateUser ([FromBody] Request_UpdateUserDto request)
+        {
+            var userId = HttpContext.User.FindFirstValue("uid");
+            var user = await _userManager.FindByIdAsync(userId);
+            if(user == null)
+            {
+                return BadRequest("user not found with given id");
+            }
+            user.FirstName = request.FirstName;
+            user.LastName = request.LastName;
+            await _userManager.UpdateAsync(user);
+            return Ok("User updated");
         }
 
         

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using TestApi.Configurations;
 using TestApi.Models.AuthModels;
+using TestApi.Models.ProductModels;
 
 namespace TestApi.Data
 {
@@ -22,5 +23,12 @@ namespace TestApi.Data
         }
 
         public DbSet<RefreshToken> RefreshTokens {get; set;}
+        public DbSet<BaseProduct> BaseProducts { get; set; }
+        public DbSet<MainCategory> MainCategories { get; set; }
+        public DbSet<Material> Materials { get; set; }
+        public DbSet<ImageBase> ImageBases { get; set; }
+        public DbSet<ProductVariant> ProductVariants { get; set; }
+        public DbSet<ProductSize> ProductSizes { get; set; }
+        public DbSet<ProductColor> ProductColors { get; set; }
     }
 }
