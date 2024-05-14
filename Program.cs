@@ -9,12 +9,28 @@ using Microsoft.IdentityModel.Tokens;
 using TestApi.Data;
 using TestApi.Models.AuthModels;
 using TestApi.Repositories.AuthRepository;
+using TestApi.Repositories.MainCategoryRepository;
+using TestApi.Repositories.MaterialRepository;
+using TestApi.Repositories.ProductColorRepository;
+using TestApi.Repositories.ValidationsRepository;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-builder.Services.AddControllers();
+builder.Services.AddScoped<IValidationsRepository, ValidationRepository>();
+builder.Services.AddScoped<IMaterialRepository, MaterialRepository>();
+builder.Services.AddScoped<IProductColorRepository, ProductColorRepository>();
+builder.Services.AddScoped<IMaterialRepository, MaterialRepository>();
+builder.Services.AddScoped<IMainCategoryRepository, MainCategoryRepository>();
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
+
+builder.Services.AddAutoMapper(typeof(Program));
+
+
+
+
+builder.Services.AddControllers();
+
 // Add services to the container.
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));

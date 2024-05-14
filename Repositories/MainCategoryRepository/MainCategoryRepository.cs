@@ -23,7 +23,7 @@ namespace TestApi.Repositories.MainCategoryRepository
         public async Task<Response_MainCategory> GetMainCategory()
         {
             var MainCategorys = await _dbContext.MainCategories.ToListAsync();
-            if(MainCategorys.Count < 0 )
+            if(MainCategorys.Count == 0 )
             {
                 return new Response_MainCategory
                 {

@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using TestApi.DTOs.ProductColorDtos.Request;
-using TestApi.DTOs.ProductColorDtos.Response;
+using TestApi.DTOs.ProductDtos.Request;
+using TestApi.DTOs.ProductDtos.Response;
 
 namespace TestApi.Repositories.ProductColorRepository
 {

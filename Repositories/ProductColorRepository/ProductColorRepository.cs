@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using TestApi.Data;
-using TestApi.DTOs.ProductColorDtos.Request;
-using TestApi.DTOs.ProductColorDtos.Response;
+using TestApi.DTOs.ProductDtos.Request;
+using TestApi.DTOs.ProductDtos.Response;
 using TestApi.Models.ProductModels;
 
 namespace TestApi.Repositories.ProductColorRepository
@@ -65,7 +65,7 @@ namespace TestApi.Repositories.ProductColorRepository
         public async Task<Response_ProductColor> GetAllProductColors()
         {
             var productColors = await _dbContext.ProductColors.ToListAsync();
-            if(productColors == null)
+            if(productColors.Count == 0)
             {
                 return new Response_ProductColor
                 {
@@ -115,6 +115,7 @@ namespace TestApi.Repositories.ProductColorRepository
                 };
             }
             existingProductColor.Name = productColor.Name;
+            
             await _dbContext.SaveChangesAsync();
             return new Response_ProductColor
             {

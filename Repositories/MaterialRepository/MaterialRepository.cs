@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using TestApi.Data;
 using TestApi.DTOs.ProductDtos.Request;
@@ -12,15 +13,17 @@ namespace TestApi.Repositories.MaterialRepository
 {
     public class MaterialRepository : IMaterialRepository
     {
+        private readonly IMapper _mapper;
         private readonly ApplicationDbContext _dbContext;
-        public MaterialRepository(ApplicationDbContext dbContext)
+        public MaterialRepository(ApplicationDbContext dbContext, IMapper mapper)
         {
             _dbContext = dbContext;
+            _mapper = mapper;
         }
         public async Task<Response_ProductMaterial> GetAllProductMaterial()
         {
             var productMaterials = await _dbContext.Materials.ToListAsync();
-            if(productMaterials.Count < 0 )
+            if(productMaterials.Count == 0 )
             {
                 return new Response_ProductMaterial
                 {
@@ -59,21 +62,69 @@ namespace TestApi.Repositories.MaterialRepository
                 }
             };
         }
-        public Task<Response_ProductMaterial> AddProductMaterial(Request_ProductMaterial productMaterialDto)
+        public async Task<Response_ProductMaterial> AddProductMaterial(Request_ProductMaterial productMaterialDto)
         {
-            throw new NotImplementedException();
+            
+            var productMaterialBaseModel = _mapper.Map<Material>(productMaterialDto);
+            await _dbContext.Materials.AddAsync(productMaterialBaseModel);
+            await _dbContext.SaveChangesAsync();
+            return new Response_ProductMaterial
+            {
+                isSuccess = true,
+                Message = " successfuly added",
+                Materials = new List<Material>
+                {
+                    productMaterialBaseModel
+                }
+            };
+
         }
 
-        public Task<Response_ProductMaterial> DeleteProductMaterial(int productMaterialId)
+        public async Task<Response_ProductMaterial> DeleteProductMaterial(int productMaterialId)
         {
-            throw new NotImplementedException();
+            var productMaterial = await _dbContext.Materials.FirstOrDefaultAsync(x => x.Id == productMaterialId);
+            if(productMaterial == null)
+            {
+                return new Response_ProductMaterial
+                {
+                    isSuccess = false,
+                    Message = "There is no product material with this id"
+                };
+            }
+            _dbContext.Materials.Remove(productMaterial);
+            await _dbContext.SaveChangesAsync();
+            return new Response_ProductMaterial
+            {
+                isSuccess = false,
+                Message = "Successfuly removed"
+            };
         }
 
         
 
-        public Task<Response_ProductMaterial> UpdateProductMaterial(int productMaterialId, Request_ProductMaterial Request_ProductMaterialDto)
+        public async Task<Response_ProductMaterial> UpdateProductMaterial(int productMaterialId, Request_ProductMaterial Request_ProductMaterialDto)
         {
-            throw new NotImplementedException();
+            
+            var productMaterial = await _dbContext.Materials.FirstOrDefaultAsync(x => x.Id == productMaterialId);
+            if(productMaterial == null)
+            {
+                return new Response_ProductMaterial
+                {
+                    isSuccess = false,
+                    Message = "Wrong Id provided"
+                };
+            }
+            productMaterial.Name = Request_ProductMaterialDto.Name;
+            await _dbContext.SaveChangesAsync();
+            return new Response_ProductMaterial
+            {
+                isSuccess = true,
+                Message = "Successfuly Updated",
+                Materials = new List<Material>
+                {
+                    productMaterial
+                }
+            };
         }
     }
 }

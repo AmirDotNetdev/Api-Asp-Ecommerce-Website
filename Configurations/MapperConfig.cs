@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using TestApi.DTOs.ProductColorDtos.Request;
 using TestApi.DTOs.ProductDtos.Request;
 using TestApi.Models.ProductModels;
 
