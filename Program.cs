@@ -9,6 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 using TestApi.Data;
 using TestApi.Models.AuthModels;
 using TestApi.Repositories.AuthRepository;
+using TestApi.Repositories.BaseProductRepository;
 using TestApi.Repositories.MainCategoryRepository;
 using TestApi.Repositories.MaterialRepository;
 using TestApi.Repositories.ProductColorRepository;
@@ -23,6 +24,7 @@ builder.Services.AddScoped<IProductColorRepository, ProductColorRepository>();
 builder.Services.AddScoped<IMaterialRepository, MaterialRepository>();
 builder.Services.AddScoped<IMainCategoryRepository, MainCategoryRepository>();
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
+builder.Services.AddScoped<IBaseProductRepository, BaseProductRepository>();
 
 builder.Services.AddAutoMapper(typeof(Program));
 
