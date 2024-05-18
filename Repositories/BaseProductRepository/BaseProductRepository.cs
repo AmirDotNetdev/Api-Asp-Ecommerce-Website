@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using TestApi.Data;
 using TestApi.Data.CustomModels;
 using TestApi.DtoConvertations;
+using TestApi.DTOs.BasePorductDto.CustomModels;
 using TestApi.DTOs.BasePorductDto.Request;
 using TestApi.DTOs.BasePorductDto.Response;
 using TestApi.Models.ProductModels;
@@ -48,19 +49,74 @@ namespace TestApi.Repositories.BaseProductRepository
 
         public async Task<Response_BaseProductWithPaging> GetAllWithFullInfoByPages(int pageNumber, int pageSize)
         {
-            var Response_BaseProductWithPaging = new Response_BaseProductWithPaging();
+            var baseProductWithPaging = new Response_BaseProductWithPaging();
             float numberpp = (float)pageNumber;
             var totalPages = Math.Ceiling((await GetAllAsync()).Count()/numberpp);
+            int totPages = (int)totalPages;
+             var baseProducts = await _dbContext.BaseProducts.Include(p => p.MainCategory).Include(p => p.Material).Include(p => p.productVariants).ThenInclude(p => p.ProductColor)
+            .Include(p => p.productVariants).ThenInclude(p => p.ProductSize)
+            .Include(p => p.imageBases).Skip((pageNumber -1)*pageSize).ToListAsync();
+            // convert To dto
+
+            var customBaseProducts = baseProducts.ConvertToDtoListCustomProduct();
+            baseProductWithPaging.BaseProduct = customBaseProducts.ToList();
+            baseProductWithPaging.TotalPages = totPages;
+            return baseProductWithPaging;
+
         }
 
-        public Task<Response_BaseProductWithFullInfo> GetByIdWithFullInfo(int baseProductId)
+        public async Task<Response_BaseProductWithFullInfo> GetByIdWithFullInfo(int baseProductId)
         {
-            throw new NotImplementedException();
+             var existingBaseProduct = await _dbContext.BaseProducts.Include(p => p.MainCategory).Include(p => p.Material).Include(p => p.productVariants).ThenInclude(p => p.ProductColor)
+            .Include(p => p.productVariants).ThenInclude(p => p.ProductSize)
+            .Include(p => p.imageBases).FirstOrDefaultAsync(x => x.Id == baseProductId);
+
+            if(existingBaseProduct is null)
+            {
+                return new Response_BaseProductWithFullInfo()
+                {
+                    isSuccess = false,
+                    Message = "No base product with given Id",
+
+                };
+
+            }
+            // convert to dto object
+            var baseProductCustom = existingBaseProduct.ConvertToDtoCustomProduct();
+
+            return new Response_BaseProductWithFullInfo
+            {
+                isSuccess = true,
+                Message = "base product custom is retrived",
+                baseProduct = baseProductCustom
+            };
+
+
         }
 
-        public Task<Response_BaseProduct> GetByIdWithNoInfo(int baseProductId)
+        public async Task<Response_BaseProduct> GetByIdWithNoInfo(int baseProductId)
         {
-            throw new NotImplementedException();
+            var existingBaseProduct = await _dbContext.BaseProducts.FirstOrDefaultAsync(x => x.Id == baseProductId);
+            if(existingBaseProduct is null)
+            {
+                return new Response_BaseProduct()
+                {
+                    isSuccess = false,
+                    Message = "No product found with this id",
+
+                };
+            }
+            // convert to dto
+
+            var baseProductCustom = existingBaseProduct.ConvertToDtoProductNoInfo();
+            var listBaseProductCustom = new List<Model_BaseProductWithNoExtraInfo>();
+            listBaseProductCustom.Add(baseProductCustom);
+            return new Response_BaseProduct
+            {
+                isSuccess = true,
+                Message = "Successfuly",
+                baseProducts = listBaseProductCustom
+            };
         }
 
         public Task<IEnumerable<Model_BaseProductCustom>> GetProductSearch(string searchText)
