@@ -9,6 +9,7 @@ using TestApi.DtoConvertations;
 using TestApi.DTOs.BasePorductDto.CustomModels;
 using TestApi.DTOs.BasePorductDto.Request;
 using TestApi.DTOs.BasePorductDto.Response;
+using TestApi.Helpers;
 using TestApi.Models.ProductModels;
 
 namespace TestApi.Repositories.BaseProductRepository
@@ -23,9 +24,30 @@ namespace TestApi.Repositories.BaseProductRepository
         }
 
 
-        public Task<Response_BaseProduct> AddBaseProduct(Request_BaseProduct baseProduct)
+        public async Task<Response_BaseProduct> AddBaseProduct(Request_BaseProduct baseProduct)
         {
-            throw new NotImplementedException();
+            var baseProductDb = baseProduct.ConvetToBaseProdcutFromDto();
+            if(baseProductDb == null)
+            {
+                return new Response_BaseProduct()
+                {
+                    isSuccess = false,
+                    Message = "No request",
+
+                };
+            }
+            await _dbContext.BaseProducts.AddAsync(baseProductDb);
+            await _dbContext.SaveChangesAsync();
+            var convertedToDto = baseProductDb.ConvertToDtoProductNoInfo();
+            return new Response_BaseProduct
+            {
+                isSuccess = true,
+                Message = "Successfuly added",
+                baseProducts = new List<Model_BaseProductWithNoExtraInfo>
+                {
+                    convertedToDto
+                }
+            };
         }
 
         public async Task<IEnumerable<BaseProduct>> GetAllAsync()
@@ -144,14 +166,75 @@ namespace TestApi.Repositories.BaseProductRepository
             throw new NotImplementedException();
         }
 
-        public Task<Response_BaseProduct> UpdateBaseProduct(int baseProductId, Request_BaseProduct baseProduct)
+        public async Task<Response_BaseProduct> UpdateBaseProduct(int baseProductId, Request_BaseProduct baseProduct)
         {
-            throw new NotImplementedException();
+            var existingBaseProduct = await _dbContext.BaseProducts.FirstOrDefaultAsync(x => x.Id == baseProductId);
+            if (existingBaseProduct is null)
+            {
+                return new Response_BaseProduct
+                {
+                    isSuccess = false,
+                    Message = "no product found with this id"
+                };
+            }
+            existingBaseProduct.Description = baseProduct.Description;
+            existingBaseProduct.Discount = baseProduct.Discount;
+            existingBaseProduct.MainCategoryId = baseProduct.MainCategoryId;
+            existingBaseProduct.MaterialId = baseProduct.MaterialId;
+            existingBaseProduct.Name = baseProduct.Name;
+            // calculate totla price
+            existingBaseProduct.TotalPrice = baseProduct.Price - (baseProduct.Price * baseProduct.Discount / 100);
+
+            await _dbContext.SaveChangesAsync();
+            var convertedModel = existingBaseProduct.ConvertToDtoProductNoInfo();
+            return new Response_BaseProduct
+            {
+                isSuccess = true,
+                Message = "Successfuly Updated",
+                baseProducts = new List<Model_BaseProductWithNoExtraInfo>
+                {
+                    convertedModel
+                }
+            };
         }
 
-        public Task<Response_BaseProduct> UpdateBaseProductDiscount(int baseProductId, Request_BaseProductDiscount baseProductDiscount)
+        public async Task<Response_BaseProduct> UpdateBaseProductDiscount(int baseProductId, Request_BaseProductDiscount baseProductDiscount)
         {
-            throw new NotImplementedException();
+            var existingBaseProduct = await _dbContext.BaseProducts.FirstOrDefaultAsync(x => x.Id == baseProductId);
+            if(existingBaseProduct is null)
+            {
+                return new Response_BaseProduct
+                {
+                    isSuccess = false,
+                    Message = "No product found",
+
+                };
+            }
+            if(baseProductDiscount.Discount > 99 || baseProductDiscount.Discount < 0)
+            {
+                return new Response_BaseProduct
+                {
+                    isSuccess = false,
+                    Message = "wrong discount",
+
+                }; 
+            }
+            existingBaseProduct.Discount = baseProductDiscount.Discount;
+            
+            var totalPrice = CalculateTotalPrice.CalculateDiscount(new CalculateTotalPriceDto {Discount = baseProductDiscount.Discount, Price = existingBaseProduct.Price});
+            
+            existingBaseProduct.TotalPrice = totalPrice;
+            await _dbContext.SaveChangesAsync();
+            var convertedModel = existingBaseProduct.ConvertToDtoProductNoInfo();
+            return new Response_BaseProduct
+            {
+                isSuccess = true,
+                Message = "successfuly updated",
+                baseProducts = new List<Model_BaseProductWithNoExtraInfo>
+                {
+                    convertedModel
+                }
+            };
         }
 
         public Task<Response_BaseProduct> UpdateBaseProductMainCategory(int baseProductId, Request_BaseProductMainCategory baseProductMainCategory)
