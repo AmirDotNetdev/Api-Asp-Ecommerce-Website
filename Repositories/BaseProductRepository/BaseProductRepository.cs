@@ -156,9 +156,30 @@ namespace TestApi.Repositories.BaseProductRepository
             throw new NotImplementedException();
         }
 
-        public Task<Response_BaseProduct> RemoveBaseProduct(int baseProductId)
+        public async Task<Response_BaseProduct> RemoveBaseProduct(int baseProductId)
         {
-            throw new NotImplementedException();
+            var existingBaseProduct = await _dbContext.BaseProducts.FirstOrDefaultAsync(x => x.Id == baseProductId);
+            if (existingBaseProduct == null)
+            {
+                return new Response_BaseProduct
+                {
+                    isSuccess = false,
+                    Message = "Not found",
+
+                };
+            }
+            _dbContext.BaseProducts.Remove(existingBaseProduct);
+            await _dbContext.SaveChangesAsync();
+            var baseProductWithNoInfo = existingBaseProduct.ConvertToDtoProductNoInfo();
+            return new Response_BaseProduct
+            {
+                isSuccess = true,
+                Message = "Successful",
+                baseProducts = new List<Model_BaseProductWithNoExtraInfo>
+                {
+                    baseProductWithNoInfo
+                }
+            };
         }
 
         public Task<IEnumerable<Model_BaseImageCustom>> SearchProducts(int[] materialsIds, int[] mainCategoryIds, int[] productColorIds, int[] productSizesIds)
@@ -237,19 +258,96 @@ namespace TestApi.Repositories.BaseProductRepository
             };
         }
 
-        public Task<Response_BaseProduct> UpdateBaseProductMainCategory(int baseProductId, Request_BaseProductMainCategory baseProductMainCategory)
+        public async Task<Response_BaseProduct> UpdateBaseProductMainCategory(int baseProductId, Request_BaseProductMainCategory baseProductMainCategory)
         {
-            throw new NotImplementedException();
+            var existingBaseProduct = await _dbContext.BaseProducts.FirstOrDefaultAsync(x => x.Id == baseProductId);
+            if(existingBaseProduct == null)
+            {
+                return new Response_BaseProduct
+                {
+                    isSuccess = false,
+                    Message = "Not found",
+
+                };
+            }
+            existingBaseProduct.MainCategoryId = baseProductMainCategory.MainCategoryId;
+            await _dbContext.SaveChangesAsync();
+            var baseProductWithNoInfo = existingBaseProduct.ConvertToDtoProductNoInfo();
+            return new Response_BaseProduct
+            {
+                isSuccess = true,
+                Message = "Successful",
+                baseProducts = new List<Model_BaseProductWithNoExtraInfo>
+                {
+                    baseProductWithNoInfo
+                }
+            };
         }
 
-        public Task<Response_BaseProduct> UpdateBaseProductMaterial(int baseProductId, Request_BaseProductMaterial baseProductMaterial)
+        public async Task<Response_BaseProduct> UpdateBaseProductMaterial(int baseProductId, Request_BaseProductMaterial baseProductMaterial)
         {
-            throw new NotImplementedException();
+            var existingBaseProduct = await _dbContext.BaseProducts.FirstOrDefaultAsync(x => x.Id == baseProductId);
+            if (existingBaseProduct == null)
+            {
+                return new Response_BaseProduct
+                {
+                    isSuccess = false,
+                    Message = "Not found",
+
+                };
+            }
+            existingBaseProduct.MainCategoryId = baseProductMaterial.MaterialId;
+            await _dbContext.SaveChangesAsync();
+            var baseProductWithNoInfo = existingBaseProduct.ConvertToDtoProductNoInfo();
+            return new Response_BaseProduct
+            {
+                isSuccess = true,
+                Message = "Successful",
+                baseProducts = new List<Model_BaseProductWithNoExtraInfo>
+                {
+                    baseProductWithNoInfo
+                }
+            };
         }
 
-        public Task<Response_BaseProduct> UpdateBaseProductPrice(int baseProductId, Request_BaseProductPrice baseProductPrice)
+        public async Task<Response_BaseProduct> UpdateBaseProductPrice(int baseProductId, Request_BaseProductPrice baseProductPrice)
         {
-            throw new NotImplementedException();
+            var existingProduct = await _dbContext.BaseProducts.FirstOrDefaultAsync(x => x.Id == baseProductId);
+            if(existingProduct == null)
+            {
+                return new Response_BaseProduct
+                {
+                    isSuccess = false,
+                    Message = "Not found"
+                };
+            }
+            existingProduct.Price = baseProductPrice.Price;
+
+            decimal decimalTotalPrice;
+            if(existingProduct.Discount == 0)
+            {
+                var totalPrice = existingProduct.Price;
+                decimalTotalPrice = decimal.Round(totalPrice, 2);
+            }
+            else
+            {
+                var totalPrice = existingProduct.Price - (existingProduct.Price * existingProduct.Discount/100);
+                decimalTotalPrice =  decimal.Round(totalPrice, 2);
+            }
+            existingProduct.TotalPrice = decimalTotalPrice;
+            await _dbContext.SaveChangesAsync();
+            var baseProductWithNoInfo = existingProduct.ConvertToDtoProductNoInfo();
+
+            return new Response_BaseProduct
+            {
+                isSuccess = true,
+                Message = "Successful",
+                baseProducts = new List<Model_BaseProductWithNoExtraInfo>()
+                {
+                    baseProductWithNoInfo,
+                }
+            };
+
         }
     }
 }
