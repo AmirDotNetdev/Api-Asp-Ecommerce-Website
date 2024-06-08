@@ -146,9 +146,32 @@ namespace TestApi.Repositories.BaseProductRepository
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<string>> GetProductSearchSuggestions(string searchText)
+        public async Task<IEnumerable<string>> GetProductSearchSuggestions(string searchText)
         {
-            throw new NotImplementedException();
+            var baseProducts = await SearchBaseProduct(searchText);
+            List<string> searchResult = new List<string>();
+
+            foreach(var product in baseProducts)
+            {
+                if(product.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase))
+                {
+                    searchResult.Add(product.Name);
+                }
+                if(product.Description != null)
+                {
+                    var punctution = product.Description.Where(char.IsPunctuation).Distinct().ToArray();
+                    var words = product.Description.Split().Select(x => x.Trim(punctution));
+
+                    foreach(var word in words)
+                    {
+                        if ((word.Contains(searchText, StringComparison.OrdinalIgnoreCase) && !searchResult.Contains(word)))
+                        {
+                            searchResult.Add(word);
+                        }
+                    }
+                }
+            }
+            return searchResult;
         }
 
         public Task<Response_BaseProductWithPaging> GetProductSearchWithPaging(string searchText, int pageNumber, int pageSize)
@@ -348,6 +371,13 @@ namespace TestApi.Repositories.BaseProductRepository
                 }
             };
 
+        }
+
+        //Private Methods
+
+        private async Task<IEnumerable<BaseProduct>> SearchBaseProduct(string searchingText)
+        {
+            return await _dbContext.BaseProducts.Where(x=> x.Name.Contains(searchingText.ToLower()) || x.Description.Contains(searchingText.ToLower())).ToListAsync();
         }
     }
 }
