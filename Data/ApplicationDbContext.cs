@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using TestApi.Configurations;
 using TestApi.Models.AuthModels;
 using TestApi.Models.ProductModels;
+using TestApi.Models.ShoppingCartModels;
 
 namespace TestApi.Data
 {
@@ -30,5 +31,7 @@ namespace TestApi.Data
         public DbSet<ProductVariant> ProductVariants { get; set; }
         public DbSet<ProductSize> ProductSizes { get; set; }
         public DbSet<ProductColor> ProductColors { get; set; }
+        public DbSet<ShoppingCart> ShoppingCarts{ get; set; }
+        public DbSet<CartItem> CartItems { get; set; }
     }
 }

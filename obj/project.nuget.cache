@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "gHuCU398E5H6+njxAf/EvYfkugDeP2j6UzfIWyMMKMqRkoZvbxBl6RsO24CEt/JngusEtHO552D8yDuEM3H4vA==",
+  "dgSpecHash": "1zpoJg2pVOkQIf8CmsobETnjJRN+xuHEINVKWc5OLo9AJuYXJJP4GVA49Sq01jvSgUkwXJU+DbfWXSdL1iznCg==",
   "success": true,
   "projectFilePath": "C:\\project\\tamrin\\TestApi\\TestApi.csproj",
   "expectedPackageFiles": [
@@ -8,6 +8,7 @@
     "C:\\Users\\tr.kamyabi\\.nuget\\packages\\automapper.extensions.microsoft.dependencyinjection\\12.0.1\\automapper.extensions.microsoft.dependencyinjection.12.0.1.nupkg.sha512",
     "C:\\Users\\tr.kamyabi\\.nuget\\packages\\azure.core\\1.35.0\\azure.core.1.35.0.nupkg.sha512",
     "C:\\Users\\tr.kamyabi\\.nuget\\packages\\azure.identity\\1.10.3\\azure.identity.1.10.3.nupkg.sha512",
+    "C:\\Users\\tr.kamyabi\\.nuget\\packages\\castle.core\\5.1.1\\castle.core.5.1.1.nupkg.sha512",
     "C:\\Users\\tr.kamyabi\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\tr.kamyabi\\.nuget\\packages\\itext\\8.0.4\\itext.8.0.4.nupkg.sha512",
     "C:\\Users\\tr.kamyabi\\.nuget\\packages\\itext.commons\\8.0.4\\itext.commons.8.0.4.nupkg.sha512",
@@ -33,6 +34,7 @@
     "C:\\Users\\tr.kamyabi\\.nuget\\packages\\microsoft.entityframeworkcore.abstractions\\8.0.4\\microsoft.entityframeworkcore.abstractions.8.0.4.nupkg.sha512",
     "C:\\Users\\tr.kamyabi\\.nuget\\packages\\microsoft.entityframeworkcore.analyzers\\8.0.4\\microsoft.entityframeworkcore.analyzers.8.0.4.nupkg.sha512",
     "C:\\Users\\tr.kamyabi\\.nuget\\packages\\microsoft.entityframeworkcore.design\\8.0.4\\microsoft.entityframeworkcore.design.8.0.4.nupkg.sha512",
+    "C:\\Users\\tr.kamyabi\\.nuget\\packages\\microsoft.entityframeworkcore.proxies\\8.0.4\\microsoft.entityframeworkcore.proxies.8.0.4.nupkg.sha512",
     "C:\\Users\\tr.kamyabi\\.nuget\\packages\\microsoft.entityframeworkcore.relational\\8.0.4\\microsoft.entityframeworkcore.relational.8.0.4.nupkg.sha512",
     "C:\\Users\\tr.kamyabi\\.nuget\\packages\\microsoft.entityframeworkcore.sqlite\\8.0.4\\microsoft.entityframeworkcore.sqlite.8.0.4.nupkg.sha512",
     "C:\\Users\\tr.kamyabi\\.nuget\\packages\\microsoft.entityframeworkcore.sqlite.core\\8.0.4\\microsoft.entityframeworkcore.sqlite.core.8.0.4.nupkg.sha512",
@@ -111,6 +113,7 @@
     "C:\\Users\\tr.kamyabi\\.nuget\\packages\\system.configuration.configurationmanager\\6.0.1\\system.configuration.configurationmanager.6.0.1.nupkg.sha512",
     "C:\\Users\\tr.kamyabi\\.nuget\\packages\\system.diagnostics.debug\\4.3.0\\system.diagnostics.debug.4.3.0.nupkg.sha512",
     "C:\\Users\\tr.kamyabi\\.nuget\\packages\\system.diagnostics.diagnosticsource\\6.0.1\\system.diagnostics.diagnosticsource.6.0.1.nupkg.sha512",
+    "C:\\Users\\tr.kamyabi\\.nuget\\packages\\system.diagnostics.eventlog\\6.0.0\\system.diagnostics.eventlog.6.0.0.nupkg.sha512",
     "C:\\Users\\tr.kamyabi\\.nuget\\packages\\system.diagnostics.process\\4.3.0\\system.diagnostics.process.4.3.0.nupkg.sha512",
     "C:\\Users\\tr.kamyabi\\.nuget\\packages\\system.diagnostics.tracing\\4.3.0\\system.diagnostics.tracing.4.3.0.nupkg.sha512",
     "C:\\Users\\tr.kamyabi\\.nuget\\packages\\system.drawing.common\\6.0.0\\system.drawing.common.6.0.0.nupkg.sha512",

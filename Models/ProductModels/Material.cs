@@ -11,6 +11,6 @@ namespace TestApi.Models.ProductModels
         public int Id { get; set; }
         public string Name { get; set; }
         [JsonIgnore]
-        public IEnumerable<BaseProduct> baseProducts { get; set; }
+        public virtual IEnumerable<BaseProduct> baseProducts { get; set; }
     }
 }

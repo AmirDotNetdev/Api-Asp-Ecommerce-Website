@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using TestApi.Data.CustomModels;
 using TestApi.DTOs.BasePorductDto.CustomModels;
+using TestApi.DTOs.ShoppingCartDto;
 using TestApi.Models.ProductModels;
+using TestApi.Models.ShoppingCartModels;
 
 namespace TestApi.DtoConvertations
 {
@@ -137,6 +140,53 @@ namespace TestApi.DtoConvertations
                 Price = baseProduct.Price,
                 TotalPrice = baseProduct.TotalPrice
             };
+        }
+
+        public static Model_CartItemReturn ConvertToDtoCartItem(this BaseProduct baseProduct , ProductVariant productVariant , CartItem cartItem)
+        {
+            Model_CartItemReturn cartItemReturn = new Model_CartItemReturn();
+            bool enoughItems = true;
+
+            if(productVariant.Quantity < cartItem.Quantity)
+            {
+                enoughItems = false;
+            }
+            cartItemReturn.BaseProductId = baseProduct.Id;
+            cartItemReturn.BaseProductName = baseProduct.Name;
+            cartItemReturn.BaseProductDescription = baseProduct.Description;
+            cartItemReturn.Price = baseProduct.Price;
+            cartItemReturn.Discount = baseProduct.Discount;
+            cartItemReturn.TotalPrice = baseProduct.TotalPrice;
+            cartItemReturn.ProductVariantId = productVariant.Id;
+
+            Model_ProductColorCustom productColorCustom = new Model_ProductColorCustom()
+            {
+                Id = productVariant.ProductColor.Id,
+                Name = productVariant.ProductColor.Name,
+            };
+
+            Model_ProductSizeCustom productSizeCustom = new Model_ProductSizeCustom()
+            {
+                Id = productVariant.ProductSize.Id,
+                Name = productVariant.ProductSize.Name,
+            };
+            cartItemReturn.ProductColor = productColorCustom;
+            cartItemReturn.ProductSize = productSizeCustom;
+            cartItemReturn.AvailableQuantity = productVariant.Quantity;
+            cartItemReturn.SelectedQuantity = cartItem.Quantity;
+            cartItemReturn.CanBeSold = enoughItems;
+
+            cartItemReturn.TotalPrice = cartItem.Quantity * baseProduct.TotalPrice;
+
+            if(enoughItems)
+            {
+                cartItemReturn.Message = "Item can be sold";
+            }
+            else
+            {
+                cartItemReturn.Message = "Not enough items";
+            }
+            return cartItemReturn;
         }
 
         

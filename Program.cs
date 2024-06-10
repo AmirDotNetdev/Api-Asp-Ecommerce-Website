@@ -13,6 +13,7 @@ using TestApi.Repositories.BaseProductRepository;
 using TestApi.Repositories.MainCategoryRepository;
 using TestApi.Repositories.MaterialRepository;
 using TestApi.Repositories.ProductColorRepository;
+using TestApi.Repositories.ShoppingCartRepository;
 using TestApi.Repositories.ValidationsRepository;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,6 +26,7 @@ builder.Services.AddScoped<IMaterialRepository, MaterialRepository>();
 builder.Services.AddScoped<IMainCategoryRepository, MainCategoryRepository>();
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 builder.Services.AddScoped<IBaseProductRepository, BaseProductRepository>();
+builder.Services.AddScoped<IShoppingCartRepository, ShoppingCartRepository>();
 
 builder.Services.AddAutoMapper(typeof(Program));
 
@@ -35,7 +37,7 @@ builder.Services.AddControllers();
 
 // Add services to the container.
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString));
+    options.UseLazyLoadingProxies().UseSqlServer(connectionString));
 
 builder.Services.AddDefaultIdentity<ApiUser>(options => {
     options.Password.RequireDigit = true;

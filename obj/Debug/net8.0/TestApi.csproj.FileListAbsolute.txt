@@ -190,3 +190,5 @@ C:\project\tamrin\TestApi\obj\Debug\net8.0\refint\TestApi.dll
 C:\project\tamrin\TestApi\obj\Debug\net8.0\TestApi.pdb
 C:\project\tamrin\TestApi\obj\Debug\net8.0\TestApi.genruntimeconfig.cache
 C:\project\tamrin\TestApi\obj\Debug\net8.0\ref\TestApi.dll
+C:\project\tamrin\TestApi\bin\Debug\net8.0\Castle.Core.dll
+C:\project\tamrin\TestApi\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.Proxies.dll

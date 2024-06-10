@@ -12,11 +12,11 @@ namespace TestApi.Models.ProductModels
         public string Name { get; set; }
         public string Description { get; set; }
         public int MainCategoryId { get; set; }
-        public MainCategory MainCategory { get; set; }
+        public virtual MainCategory MainCategory { get; set; }
         public int MaterialId { get; set; }
-        public Material Material { get; set; }
-        public ICollection<ProductVariant> productVariants { get; set; }
-        public ICollection<ImageBase> imageBases { get; set; }
+        public virtual Material Material { get; set; }
+        public virtual ICollection<ProductVariant> productVariants { get; set; }
+        public virtual ICollection<ImageBase> imageBases { get; set; }
         [Column(TypeName ="decimal(18,2)")]
         public decimal Price { get; set; }
         public int Discount { get; set; }

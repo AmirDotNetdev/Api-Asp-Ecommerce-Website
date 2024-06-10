@@ -15,7 +15,7 @@ namespace TestApi.Models.ProductModels
         public string ImagePath { get; set; }
         public DateTime AddedOn { get; set; }
         public int BaseProductId { get; set; }
-        public BaseProduct BaseProduct { get; set; }
+        public virtual BaseProduct BaseProduct { get; set; }
         public string StaticPath { get; set; }
     }
 }
